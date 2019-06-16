@@ -1,0 +1,212 @@
+[
+  {
+    "id": "1001",
+    "name": "7 Cheese Pizza",
+    "description": "A perfect cheese blend of mozzarella, cheddar, monterey jack, parmesan, provolone & romano with a layer of cream cheese, giving you the ultimate cheese experience. You can also add a blend of green chili and onion on yours as a complimentary topping.",
+    "vegetarian": true,
+    "image": "7-cheese-pizza.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 4.50
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 3.00
+      }
+    ]
+  },
+  {
+    "id": "1002",
+    "name": "BBQ Chicken",
+    "description": "BBQ chicken accompanied by spicy jalapenos, onions and a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image":"bbq-chicken.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.25
+      },
+      {
+        "pan": "medium",
+        "price": 4.60
+      },
+      {
+        "pan": "small",
+        "price": 3.25
+      }
+    ]
+  },
+  {
+    "id": "1003",
+    "name": "Beef Pepperoni",
+    "description": "Australian beef pepperoni in pizza sauce with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image":"beef-pepperoni.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.99
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "1004",
+    "name": "Chicken Bacon Mayo",
+    "description": "Chicken bacon, onions & green chillies with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image": "chicken-bacon-mayo.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.99
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "1005",
+    "name": "Devilled Chicken",
+    "description": "Devilled chicken in spicy sauce with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image": "devilled-chicken.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.25
+      },
+      {
+        "pan": "medium",
+        "price": 4.60
+      },
+      {
+        "pan": "small",
+        "price": 3.25
+      }
+    ]
+  },
+  {
+   "id": "1006",
+    "name": "Hot Garlic Prawns",
+    "description": "Spicy prawns, hot garlic sauce, onions, peppers and tomatoes with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image":"hot-garlic-prawns.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.99
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 2.25
+      }
+    ]
+  },
+  {
+      "id": "1007",
+    "name": "Sausage Delight",
+    "description": "Chicken sausages & onions with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image":"sausage-delight.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.99
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "1008",
+    "name": "Spicy Seafood",
+    "description": "A fiery mix of prawns, devilled fish, olives, bell peppers and onions with a double layer of mozzarella cheese.",
+    "vegetarian": false,
+    "image":"spicy-seafood.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 3.99
+      },
+      {
+        "pan": "medium",
+        "price": 2.60
+      },
+      {
+        "pan": "small",
+        "price": 1.80
+      }
+    ]
+  },
+  {
+    "id": "1009",
+    "name": "Spicy Veggie with Panner",
+    "description": "Capsicums, leeks, carrots, cabbage, pineapple and paneer with a double layer of mozzarella cheese.",
+    "vegetarian": true,
+    "image": "spicy-veggie-with-panner.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 5.99
+      },
+      {
+        "pan": "medium",
+        "price": 3.60
+      },
+      {
+        "pan": "small",
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "1010",
+    "name": "Veggie Supreme",
+    "description": "Mushrooms, tomatoes, onions, black olives and bell peppers with a double layer of mozzarella cheese.",
+    "vegetarian": true,
+    "image": "veggie-supreme.jpg",
+    "prices": [
+      {
+        "pan": "large",
+        "price": 3.99
+      },
+      {
+        "pan": "medium",
+        "price": 2.60
+      },
+      {
+        "pan": "small",
+        "price": 1.80
+      }
+    ]
+  }
+]

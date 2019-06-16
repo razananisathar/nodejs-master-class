@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Black Olives",
+    "price": 1.80
+  },
+  {
+    "name": "Capsicum",
+    "price": 2.40
+  },
+  {
+    "name": "Tomatoes",
+    "price": 0.60
+  },
+  {
+    "name": "Jalapeno",
+    "price": 0.75
+  },
+  ,
+  {
+    "name": "Onion",
+    "price": 0.50
+  },
+  {
+    "name": "Mushroom",
+    "price": 3.00
+  },
+  {
+    "name": "Pineapple",
+    "price": 2.50
+  }
+]
