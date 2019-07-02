@@ -8,6 +8,8 @@ const crypto = require('crypto');
 const config = require('./config');
 const https = require('https');
 const querystring = require('querystring');
+const path = require('path');
+const fs = require('fs');
 
  /** Instantiate the helpers module object */
 const helpers = {};
@@ -528,6 +530,93 @@ helpers.composeHtmlReceipt = (receiptNo, amount, items, firstName, lastName) => 
 
   const html = `${head}${beginBody}${receipt}${footer}`;
   return html;
+};
+
+/**
+ *  Add the universal header and footer to a string, and pass provided data object to header and footer for interpolation.
+ * @param {str} string - html  common template
+ * @param {data} string - global template properties
+ */
+helpers.addUniversalTemplate = (str, data, callback) => {
+  str = typeof(str) == 'string' && str.length > 0 ? str : '';
+  data = typeof(data) == 'object' && data !== null ? data : {};
+
+  // Get the header.
+  helpers.getTemplate('_header', data, (err, headerStr) => {
+    if(!err && headerStr) {
+      helpers.getTemplate('_footer', data, (err, footerStr) => {
+        if(!err && footerStr) {
+          const fullStr = `${headerStr}${str}${footerStr}`;
+          callback(false, fullStr);
+        } else callback('Could not find the footer template');
+      });
+    } else callback('Could not find the header template.');
+  });
+};
+
+/**
+ * Get the string content of a template, and use provided data for string interpolation.
+ * @param {templateName} string - Name of the HTML template
+ * @param {data} object - template properties
+ */
+helpers.getTemplate = (templateName, data, callback) => {
+  templateName = typeof(templateName) == 'string' && templateName.length > 0 ? templateName : false;
+  data = typeof(data) == 'object' && data !== null ? data : {};
+
+  if(templateName) {
+    const templateDir = path.join(__dirname, '/../templates/');
+
+    fs.readFile(`${templateDir}${templateName}.html`, 'utf8', (err, str) => {
+      if(!err && str && str.length > 0) {
+        // Do interpolation on the string.
+        const finalString = helpers.interpolate(str, data);
+        callback(false, finalString);
+      } else callback('Could not find the page template.');
+    });
+
+  } else callback('Invalid template name.');
+};
+
+/**
+ *  Take a given string and data object, and find/replace all the keys within it.
+ * @param {str} string - string template
+ * @param {data} object - template properties
+ */
+helpers.interpolate = (str, data) => {
+  str = typeof(str) == 'string' && str.length > 0 ? str : '';
+  data = typeof(data) == 'object' && data !== null ? data : {};
+
+  // Add the templateGlobals to the data object, prepending their key name with "global.".
+  for(const keyName in config.templateGlobals) {
+    if(config.templateGlobals.hasOwnProperty(keyName)) data[`global.${keyName}`] = config.templateGlobals[keyName];
+  }
+
+   // For each key in the data object, insert its value into the string at the corresponding placeholder.
+   for(const key in data) {
+     if(data.hasOwnProperty(key) && typeof(data[key]) == 'string') {
+       const replace = data[key];
+       const find = `{${key}}`;
+       str = str.replace(find, replace);
+     }
+   }
+   return str;
+};
+
+/**
+ * Get the contents of a static (public) asset.
+ * @param {assetName} string - file name of the staic asset, (public)
+ */
+helpers.getStaticAsset = (assetName, callback) => {
+  assetName = typeof(assetName) == 'string' && assetName.length > 0 ? assetName : false;
+
+  if(assetName) {
+    const assetsDir = path.join(__dirname, '/../public/');
+
+    fs.readFile(`${assetsDir}${assetName}`, (err, data) => {
+      if(!err && data) callback(false, data);
+      else callback('Could not find the static asset.');
+    });
+  } else callback('Invalid static asset name.');
 };
 
 module.exports = helpers;

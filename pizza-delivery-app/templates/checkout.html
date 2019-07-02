@@ -1,0 +1,105 @@
+<!-- Display order checkout. -->
+<div class="container">
+  <div id="noCart" class="hide">
+    <p class="alert alert-warning">Your cart is empty.</p>
+    <a href="/menu" class="btn btn-link">Continue Shopping</a>
+  </div>
+  <div class="row" id="checkout">
+    <div class="column-2">
+      <h2 class="headline">My Cart</h2>
+      <table class="tbl-cart" id="tblCart">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Pan</th>
+            <th>Unit Price</th>
+            <th>Quantities</th>
+            <th>Sub Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCart">
+        </tbody>
+      </table>
+    </div>
+    <div class="column-2">
+      <h2 class="headline">Delivery Address</h2>
+      <p class="alert alert-info notification">
+        Delivery Address is same as the one in your account.
+        <br>
+        If you want to change your delivery address update your account information.</p>
+      <form class="form-horizontal" name="billingAddress" id="billingAddress" novalidate>
+        <div class="form-row">
+          <label for="">Address</label>
+          <input type="text" name="address" value="" disabled>
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label for="">City</label>
+          <input type="text" name="city" value="" disabled>
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label for="">State</label>
+          <input type="text" name="state" value="" disabled>
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label for="">Postal Code</label>
+          <input type="text" name="postalCode" value="" disabled>
+          <p class="error"></p>
+        </div>
+      </form>
+      <h2 class="headline">Payment</h2>
+      <p class="alert alert-info hide" id="orderMsg">Please wait. We are processing your order.</p>
+      <form class="form-horizontal" name="frm_order" id="frmOrder" action="/api/orders" method="POST" novalidate>
+        <div class="form-row">
+          <label>Name on the Card</label>
+          <input type="text" name="cardName" placeholder="J. Doe">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label>Card Number</label>
+          <input type="text" name="cardNumber" placeholder="card number"  maxlength="16">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label>Expire Month</label>
+          <select name="cardExpireMonth">
+            <option value="">Select Month</option>
+            <option value="01">January</option>
+            <option value="02">February </option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label>Expire Year</label>
+          <input type="text" name="cardExpireYear" placeholder="YYYY" maxlength="4">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label>CVC</label>
+          <input type="text" name="cardCvc" placeholder="CVC" maxlength="4" minlength="3">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <p>Accepted Cards</p>
+          <img src= 'public/images/card.png' alt='charge cards' class="pay-types">
+          <button type="submit" name="btnSubmit" class="btn btn-submit pull-right btn-pay">Pay Now</button>
+          <input type="hidden" name="cartId">
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

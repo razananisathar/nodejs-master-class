@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <base href="{global.baseUrl}" >
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="{page.description}">
+    <meta name="author" content="{global.companyName}" />
+
+    <title> {page.title} | {global.appName}</title>
+    <link rel="stylesheet" href="public/app.css">
+    <link type="image/x-icon" rel="icon" href="public/images/favicon.ico">
+  </head>
+  <body class="{page.bodyClass}" id="{page.bodyId}">
+    <div class="main-wrapper">
+    <header>
+          <nav class="mainnav">
+            <p class="pull-right m-0 loggedin-user" id="user"></p>
+            <div class="brand">
+              <a href="/">
+                <img class="brand-logo" src="public/images/logo.png" alt="logo">
+              </a>
+            </div>
+            <div class="">
+              <ul class="nav-list">
+                <li>
+                  <a href="menu">Menu</a>
+                </li>
+                <li class="loggedout">
+                  <a href="account/login">Log in</a>
+                </li>
+                <li class="loggedout">
+                  <a href="account/signup">Register</a>
+                </li>
+                <li class="loggedin">
+                  <a href="account/settings">Account Settings</a>
+                </li>
+                <li class="loggedin">
+                  <a href="orders/all">My Orders</a>
+                </li>
+                <li class="loggedin">
+                  <a id="logout" href="">Log out</a>
+                </li>
+                <li>
+                  <a href="/cart/checkout"><img class="cart-icon" src="public/images/cart-icon-64x64.png"><span class="cart-count" id="cartCount">0</span></a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+    </header>

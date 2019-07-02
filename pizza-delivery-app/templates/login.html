@@ -1,0 +1,25 @@
+<div class="container">
+  <div class="wrapper">
+    <h1>Let's Start Your Order</h1>
+    <p>
+      Are you a registered user? Log into place your order. <br>
+      Don't have an account? <a href="/account/signup">sign up now</a>
+    </p>
+    <div class="form-response"></div>
+    <form class="form-horizontal" id="frmLogin" name="frm_login" method="POST" action="/api/tokens" novalidate>
+        <div class="form-row">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="john@domain.com">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="*********">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <button type="submit" class="btn btn-submit" name="submit" id="btnSubmit">Log in</button>
+        </div>
+    </form>
+  </div>
+</div>

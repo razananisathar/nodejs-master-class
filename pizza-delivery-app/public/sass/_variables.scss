@@ -1,0 +1,29 @@
+$font-stack: 'Open Sans';
+$body-color: #212529;
+// $primary-color:  #74d14c;
+$font-size: 1.125rem;
+$line-height: 1.5;
+$error-color :  #EC7063;
+
+
+@mixin padding($top, $right, $bottom, $left) {
+  padding-top:$top;
+  padding-right: $right;
+  padding-bottom: $bottom;
+  padding-left: $left;
+}
+
+@mixin margin($top, $right, $bottom, $left) {
+  margin-top:$top;
+  margin-right: $right;
+  margin-bottom: $bottom;
+  margin-left: $left;
+}
+
+@mixin align($prop) {
+  text-align: $prop;
+}
+
+@mixin float($prop) {
+  float:$prop;
+}

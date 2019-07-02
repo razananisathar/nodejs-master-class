@@ -1,0 +1,523 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,300,600');
+@import '_variables';
+
+html {
+  font-size: $font-size;
+  line-height: $line-height;
+  height: 100%;
+}
+
+body {
+  font: 100% $font-stack;
+  color: $body-color;
+  background: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+  line-height: $line-height;
+  @include margin(0, 0, 0, 0);
+}
+
+.m-0 {
+  @include margin(0  !important, 0  !important, 0  !important, 0  !important);
+}
+
+.mlr-0 {
+  @include margin(inherit, 0  !important, inherit, 0  !important);
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+
+.mlr-20 {
+  @include margin(0, 20px !important, 0, 20px !important);
+}
+
+header {
+  position: relative;
+  border-bottom: 1px solid #334a51;
+
+  .cart-icon {
+    width: 50%;
+  }
+  .cart-count {
+    color:adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    background: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+    font-size: $font-size * 0.5;
+    @include margin(-5px, 0, 0, -10px);
+    @include padding(5px, 5px, 5px, 5px);
+    line-height: $line-height - 0.5;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  nav {
+    color: adjust-color($body-color, $red: 0, $green: 0, $blue: 0);
+    background-color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    @include padding(5px, 5px, 5px, 5px);
+
+    &.mainnav {
+        @include margin(0, 50px, 0, 50px);
+    }
+
+    .loggedin-user {
+        position: absolute;
+        font-size: $font-size * 0.65;
+        right: 100px;
+    }
+
+    ul {
+      list-style-type: none;
+      @include padding(0, 0, 0, 0);
+      @include margin(0, 0, 0, 0);
+
+      &.nav-list {
+        @include float(right);
+        display:flex;
+        @include margin(20px, 0, 20px, 0);
+      }
+
+      li {
+        font-size: $font-size * 1.0;
+        @include padding(15px, 20px, 15px, 20px);
+
+          a {
+            display: block;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: adjust-color($body-color, $red: 0, $green: 0, $blue: 0);
+
+            &:hover, &:visited, &:active {
+              color: adjust-color($body-color, $red: 0, $green: 0, $blue: 0);
+              text-decoration: none;
+            }
+          }
+
+          &.loggedin {
+            display : none;
+          }
+      }
+    }
+  }
+
+  .brand {
+    @include float(left);
+
+    .brand-logo {
+      width: 50%;
+    }
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+.container {
+  @include padding(60px, 50px, 60px, 50px);
+}
+
+.main-wrapper {
+    min-height: 100%;
+    position: relative;
+}
+
+.wrapper {
+    width: 50%;
+    margin: auto;
+}
+
+a {
+  color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+  font-weight: 600;
+
+  &:visited, &:active {
+    color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.btn-red {
+    background: darken(saturate(adjust-hue($error-color, -6), 14.21), 34.31);
+    border-color: darken(saturate(adjust-hue($error-color, -6), 14.21), 34.31);
+  }
+
+  &.btn-link, &.btn-order, &.btn-cancel, &.btn-continue, &.btn-red {
+    color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    text-decoration: none;
+
+    &:visited, &:active, &:hover, &:btn-red {
+      color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+      text-decoration: none;
+    }
+
+  }
+}
+
+h2 {
+  &.headline {
+    @include margin(10px, 0, 10px, 0);
+  }
+}
+
+label {
+    font-size: $font-size * 0.7;
+    font-weight: bold;
+    display: block;
+}
+
+.form-row {
+  margin-bottom: 20px;
+}
+
+.hide {
+  display: none !important;
+}
+
+.show {
+  display: block !important;
+}
+
+input, select {
+    @include padding(10px, 10px, 10px, 10px);
+    border: 2px solid #EAEDED;
+    color: #495057;
+    font-size: $font-size * 0.7;
+    background: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    border: 1px solid #ced4da;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+.row {
+  display: flex;
+  position: relative;
+  @include margin(0, -50px, 0, -50px);
+
+  .item-desc {
+    display: inline-block;
+    @include margin(10px, 10px, 10px, 10px);
+  }
+
+  .price {
+    font-weight: bold;
+    font-size: $font-size * 1.5;
+    letter-spacing: 3px;
+    line-height: $line-height * 2 + 1;
+  }
+
+  .btn-continue {
+    @include margin(10px, 20px, 10px, 20px);
+    @include float(right);
+  }
+
+}
+.text-right {
+  @include align(right);
+}
+body {
+  &.loggedin {
+    header {
+      ul {
+        li {
+          &.loggedin {
+            display: inline-block;
+          }
+           &.loggedout {
+             display: none;
+           }
+        }
+      }
+    }
+  }
+}
+
+.column-2 {
+  width: 50%;
+  @include padding(0, 50px, 0, 50px);
+}
+
+.items {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+
+  &::after {
+    content: "";
+    flex: auto;
+  }
+
+    .item {
+      width: 360px;
+      @include margin(20px, auto, 20px, auto);
+
+      p {
+        height: 100px;
+      }
+
+      img {
+        width:100%;
+      }
+
+      .featured-img {
+        position: relative;
+      }
+
+      .type-icon {
+        width: 20px;
+        position: absolute;
+        bottom: 20px;
+        right: 15px;
+      }
+
+      p {
+        font-size: $font-size * 0.80;
+      }
+
+      h3 {
+        font-size: $font-size * 1.3;
+        display: inline-block;
+        @include margin(10px, 0, 10px, 0);
+      }
+
+      .item-order {
+          position: relative;
+          @include margin(20px, 0, 20px, 0);
+      }
+
+      .btn-order {
+        width: 100%;
+      }
+    }
+}
+
+.notification {
+  font-size: $font-size * 0.80;
+}
+
+
+.btn {
+   background: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+   color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+   border: 1px solid lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+   border-radius: 2px;
+   cursor: pointer;
+   @include padding(10px, 12px, 10px, 12px);
+   font-weight: 600;
+   font-size: $font-size * 0.8;
+   font-family:  $font-stack;
+
+   &:focus {
+     outline: 0;
+   }
+}
+
+.alert {
+  @include padding(.75rem, 1.25rem, .75rem, 1.25rem);
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+}
+
+.alert-info {
+  background-color: #d9edf7;
+  border-color: #bcdff1;
+  color: #31708f;
+}
+
+.alert-danger {
+  background-color: lighten(desaturate(adjust-hue($error-color, -6), 34.81), 25.29);
+  border-color: lighten(desaturate(adjust-hue($error-color, -6), 34.62), 20.39);
+  color: darken(desaturate(adjust-hue($error-color, -5), 34.46), 19.61);
+}
+
+.alert-warning {
+  background-color: #fcf8e3;
+  border-color: #faf2cc;
+  color: #8a6d3b;
+}
+
+.alert-success {
+  background-color: #dff0d8;
+  border-color: #d0e9c6;
+  color: #3c763d;
+}
+
+.form-response {
+    color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    @include padding(12px, 0, 12px, 0);
+    margin-bottom: 5px;
+
+    > .alert {
+      font-size: $font-size * 0.75;
+    }
+}
+
+.success {
+    background: darken(desaturate(adjust-hue(#ec7063, 140), 14.91), 23.92);
+    border: 1px solid darken(desaturate(adjust-hue(#ec7063, 140), 14.91), 23.92);
+}
+
+.tbl-cart {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-spacing: 0;
+
+  thead {
+    tr {
+      th {
+        @include padding(8px, 5px,8px, 5px);
+        border-bottom: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+        border-top: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+        font-size: $font-size * 0.6;
+      }
+    }
+  }
+
+  tbody {
+
+    tr {
+      td {
+        @include padding(8px, 5px,8px, 5px);
+        border-bottom: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+        font-size: $font-size * 0.65;
+      }
+
+      &:last-child {
+        background-color: lighten(saturate(adjust-hue($body-color, -10), 54.41), 76.47);
+
+        td {
+          border-top: 1px solid lighten(desaturate(adjust-hue($body-color, -210), 10.81), 18.82);
+          border-bottom: 1px solid lighten(desaturate(adjust-hue($body-color, -210), 10.81), 18.82);
+        }
+      }
+    }
+
+
+  }
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+  border-spacing: 0;
+
+  thead {
+    tr {
+      background: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+
+      th {
+        @include padding(12px, 10px,12px, 10px);
+        border-bottom: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+        border-top: 1px solid lighten(saturate($body-color, 2.98), 74.12);
+        background-color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+        color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+      }
+    }
+  }
+
+  tr {
+    &:nth-of-type(even) {
+      background:  rgba(238, 245, 122, 0.5);
+
+    }
+
+    &:nth-of-type(odd) {
+      background: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+    }
+
+    td {
+      @include padding(10px, 8px,10px, 8px);
+      font-size: $font-size * 0.7;
+    }
+
+    &.order-error {
+      background-color: lighten(desaturate(adjust-hue($error-color, -6), 34.81), 25.29);
+      border-color: lighten(desaturate(adjust-hue($error-color, -6), 34.62), 20.39);
+
+      td {
+        color: darken(desaturate(adjust-hue($error-color, -5), 34.46), 19.61);
+      }
+    }
+  }
+}
+
+.error {
+    color: $error-color;
+    font-size: $font-size * 0.8;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+.pull-right {
+  @include float(right);
+}
+
+.btn-pay {
+  font-size: $font-size * 1.1;
+}
+
+.pay-types {
+  width : 15%;
+}
+
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./images/banner.jpg') no-repeat scroll;
+  background-position: center;
+  background-size: cover;
+  position: relative;
+  height: calc(100vh - 115px);
+}
+
+.hero-text {
+  @include align(center);
+  top: 50%;
+  left: 50%;
+  @include padding(150px, 0, 150px, 0);
+  color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+
+  h1 {
+    font-size: $font-size * 3;
+    margin-bottom: 0;
+    letter-spacing: 20px;
+  }
+
+  h2 {
+    font-size: $font-size * 1.5;
+    text-decoration: overline;
+    margin-top: 0;
+    font-style: italic;
+    text-transform: uppercase;
+  }
+}
+
+.index {
+  .items {
+    > .item {
+        @include margin(20px, 20px, 20px, 20px);
+      }
+  }
+}
+
+footer {
+
+  p {
+    font-size: $font-size * 0.65;
+    @include align(center);
+    @include padding(20px, 20px, 20px, 20px);
+    color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+  }
+
+  background: lighten(saturate(adjust-hue($body-color, -16), 11.92), 11.37);
+  z-index: 99;
+  width: 100%;
+  bottom: 0;
+  opacity: 0.8;
+}
