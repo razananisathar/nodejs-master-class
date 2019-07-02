@@ -21,7 +21,6 @@ workers.gatherAllOrders = () => {
       orders.forEach((order) => {
         _data.read('orders', order, (err, orderData) => {
           if(!err && orderData) {
-            console.log(orderData.id);
             // Pass it to the order validator, and let that function continue the function or log the error(s) as needed.
             workers.performOrderCheck(orderData);
           } else debug("Error reading one of the order's data: ", err);
@@ -94,12 +93,12 @@ workers.log = (orderData, cartData) => {
 };
 
 /**
- * Timer to execute the worker-process once per hour. (For now set to once per minute) @TODO.
+ * Timer to execute the worker-process once per hour.
  */
 workers.loop = () => {
   setInterval(() => {
     workers.gatherAllOrders();
-  },1000 * 60); // 1000 * 60 * 60
+  },1000 * 60 * 60);
 };
 
 /**
@@ -136,7 +135,7 @@ workers.rotateLogs = () => {
 workers.logRotationLoop = () => {
   setInterval(() => {
      workers.rotateLogs();
-  }, 1000 * 60 * 5); // 1000 * 60 * 60 * 24
+  }, 1000 * 60 * 60 * 24); 
 };
 
 /**

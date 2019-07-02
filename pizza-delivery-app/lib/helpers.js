@@ -70,7 +70,7 @@ helpers.validateEmailAddress = (email) => {
   }
 };
 
-/** @TODO: Find a better solution....
+/**
  * Convert an object to query string.
  * @param {prefix} string - object params nested.
  * @param {obj} object - object to encode.
