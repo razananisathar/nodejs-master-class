@@ -16,8 +16,8 @@ const handlers = {};
  * @param {data.method} string - request method
  * @param {data.trimmedPath} string - route path
  * @param {data.headers} object - request headers object
- * @param {data.queryStringObject} object request url query string object
- * @param {data.payload} object request body payload
+ * @param {data.queryStringObject} object - request url query string object
+ * @param {data.payload} object - request body payload
  */
 handlers.users = (data, callback) => {
   const acceptableMethods = ['post', 'put', 'get', 'delete'];
@@ -189,7 +189,7 @@ handlers._users.delete = (data, callback) => {
   email = typeof(email) == 'string' &&  email.trim().length > 0 && helpers.validateEmailAddress(email) ? email.trim(): false;
 
   if(email) {
-    //Get the token from headers.
+    // Get the token from headers.
     let { token } = data.headers;
     token = typeof(token) == 'string' ? token : false;
 
@@ -199,10 +199,48 @@ handlers._users.delete = (data, callback) => {
         // Lookup for user who matches that email.
         _data.read('users', email, (err, userData) => {
           if(!err && userData) {
-             // Delete the user.
+            // Delete the user.
             _data.delete('users', email, (err) => {
-              if(!err) callback(200);
-              else callback(500, {'Error': 'Could not delete the specified user.'})
+              if(!err) {
+                let { cartId, orders } = userData;
+                orders = typeof(orders) == 'object' && orders instanceof Array ? orders : [];
+                cartId = typeof(cartId) == 'string' ? cartId : false;
+                const ordersToDelete = orders.length;
+
+                let cartDeletionError = false;
+                let allOrderDeletionError = false;
+
+                // Delete all user's orders (if any).
+                if(ordersToDelete > 0) {
+                  let ordersDeleted = 0;
+                  let orderDeletionErrors = false;
+
+                  for(const orderId of orders) {
+                    _data.delete('orders', orderId, (err) => {
+                        if(err) orderDeletionErrors = true;
+
+                        ordersDeleted++;
+                    });
+                  }
+
+                  // All orders not deleted.
+                  if(ordersToDelete == ordersDeleted && orderDeletionErrors) {
+                      allOrderDeletionError = true;
+                  }
+                }
+
+                // Delete user's cart (if any).
+                if(cartId) {
+                  _data.delete('carts', cartId, (err) => {
+                    if(err) cartDeletionError = true;
+                  });
+                }
+
+                if(cartDeletionError && !allOrderDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete user\'s active cart. Active cart may not have been deleted from the system successfully.'});
+                else if(!cartDeletionError && allOrderDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete all of the user\'s orders. All orders may not have been deleted from the system successfully.'});
+                else callback(200);
+
+              } else callback(500, {'Error': 'Could not delete the specified user.'})
             });
           } else callback(400, {'Error': 'The specified user does not exist. So could not delete the user.'});
         });
@@ -217,8 +255,8 @@ handlers._users.delete = (data, callback) => {
  * @param {data.method} string - request method
  * @param {data.trimmedPath} string - route path
  * @param {data.headers} object - request headers object
- * @param {data.queryStringObject} object request url query string object
- * @param {data.payload} object request body payload
+ * @param {data.queryStringObject} object - request url query string object
+ * @param {data.payload} object - request body payload
  */
 handlers.tokens = (data, callback) => {
   const acceptableMethods = ['post', 'put', 'get', 'delete'];
@@ -235,7 +273,7 @@ handlers._tokens = {};
  * @param {data} object -  request data
  * @param {data.payload} object - request body payload
  * @param {data.payload.email} string - user's email, required
- * @param {data.payload.password} string -user's password, required
+ * @param {data.payload.password} string - user's password, required
  */
 handlers._tokens.post = (data, callback) => {
   let { email, password } = data.payload;
@@ -432,7 +470,7 @@ handlers._items.get = (data, callback) => {
  * @param {data.payload} object request body payload
  */
 handlers.carts = (data, callback) => {
-  const acceptableMethods = ['post', 'put', 'get', 'delete'];
+  const acceptableMethods = ['post', 'put', 'get'];
   const { method } = data;
   if(acceptableMethods.indexOf(method) > -1) handlers._carts[method](data, callback);
   else callback(405);
@@ -494,7 +532,7 @@ handlers._carts.post = (data, callback) => {
             });
         } else callback(400, {'Error': 'Could not find the specified token.'});
     });
-  } else callback(404, {'Error': 'Missing required fields, or fields are invalid.'});
+  } else callback(400, {'Error': 'Missing required fields, or fields are invalid.'});
 };
 
 /**
@@ -542,7 +580,7 @@ handlers._carts.put = (data, callback) => {
   items = typeof(items) == 'object' && items instanceof Array ? items : [];
   const len = items.length;
 
-  if(id && len > 0) {
+  if(id) {
       // Lookup for the cart which matches the given id.
       _data.read('carts', id, (err, cartData) => {
         if(!err && cartData) {
@@ -568,50 +606,6 @@ handlers._carts.put = (data, callback) => {
 };
 
 /**
- * Update the shopping cart.
- * @param {data} object -  request data
- * @param {data.headers} object - request headers
- * @param {data.headers.token} string - token, required
- * @param {data.queryStringObject} object - request url query string object
- * @param {data.queryStringObject.id} string - cart id, required
- */
-handlers._carts.delete = (data, callback) => {
-  let { id } = data.queryStringObject;
-  id = typeof(id) == 'string' && id.trim().length == 20 ? id.trim(): false;
-
-  if(id) {
-    // Lookup for the cart which matches the give id
-    _data.read('carts', id, (err, cartData) => {
-        if(!err && cartData) {
-          const { email } = cartData;
-
-          let { token } = data.headers;
-          token = typeof(token) == 'string' ? token : false;
-          // Validate the token.
-          handlers._tokens.verifyToken(token, email, (isValidToken) => {
-            if(isValidToken) {
-              _data.delete('carts', id, (err) => {
-                if(!err) {
-                  // Update user's cartId.
-                  _data.read('users', email, (err, userData) => {
-                      if(!err && userData) {
-                          userData.cartId = false;
-                          _data.update('users', email, userData, (err) => {
-                              if(!err) callback(200)
-                              else callback(500, {'Error': 'Could not update user.'});
-                          });
-                      } else callback(500, {'Error' : 'Could not find the cart on the user\'s object, so could not remove it.'});
-                  });
-                } else callback(500, {'Error' : 'Could not find the user who created the cart, so could not remove the cart from the user object.'});
-              });
-            } else callback(403, {'Error': 'Missing required token in header or token is invalid.'});
-          });
-        } else callback(400, {'Error': 'Could not find the specified cart.'});
-    });
-  } else callback(400, {'Error': 'Missing required inputs, or inputs are invalid.'});
-};
-
-/**
  * Handler for orders route.
  * @param {data} object -  request data
  * @param {data.method} string - request method
@@ -621,7 +615,7 @@ handlers._carts.delete = (data, callback) => {
  * @param {data.payload} object request body payload
  */
 handlers.orders = (data, callback) => {
-  const acceptableMethods = ['post', 'delete'];
+  const acceptableMethods = ['post', 'get'];
   const { method } = data;
   if(acceptableMethods.indexOf(method) > -1) handlers._orders[method](data, callback);
   else callback(405);
@@ -783,64 +777,6 @@ handlers._orders.get = (data, callback) => {
         } else callback(404);
     });
   } else callback(400, {'Error': 'Missing required inputs'});
-};
-
-
-// handlers._orders.put = (data, callback) => {
-//
-// };
-
-/**
- *
- */
-handlers._orders.delete = (data, callback) => {
-  let { id } = data.queryStringObject;
-  id = typeof(id) == 'string' && id.trim().length == 20 ? id.trim(): false;
-
-  if(id) {
-    // Lookup for the order which matches the give id.
-    _data.read('orders', id, (err, orderData) => {
-        if(!err && orderData) {
-          const { email, cartId } = orderData;
-
-          let { token } = data.headers;
-          token = typeof(token) == 'string' ? token : false;
-          // Validate the token.
-          handlers._tokens.verifyToken(token, email, (isValidToken) => {
-            if(isValidToken) {
-              _data.delete('orders', id, (err) => {
-                if(!err) {
-                  _data.delete('carts', cartId, (err) => {
-                      if(!err) {
-                        // Update user's cartId and remove user order.
-                        _data.read('users', email, (err, userData) => {
-                            if(!err && userData) {
-                                let { orders } = userData;
-                                orders = typeof(orders) == 'object' && orders instanceof Array ? orders : [];
-                                const pos = orders.indexOf(id);
-
-                                if(pos > -1) {
-                                  orders.splice(pos, 1);
-                                  userData.orders = orders;
-                                  userData.cartId = false;
-
-                                  _data.update('users', email, userData, (err) => {
-                                      if(!err) callback(200)
-                                      else callback(500, {'Error': 'Could not update the user'});
-                                  });
-                                } else callback(500, {'Error' : 'Could not find the order on the user\'s object, so could not remove it.'});
-                            } else callback(500, {'Error' : 'Could not find the user who created the order. So could not remove the order from list of orders in user\'s object.'});
-                        });
-                      } else callback(500, {'Error': 'Could not delete the cart associated with the given order.'})
-                  });
-
-                } else callback(500, {'Error' : 'Could not delete the order.'});
-              });
-            } else callback(403);
-          });
-        } else callback(400, {'Error': 'Could not find the given order.'});
-    });
-  } else callback(400, {'Error': 'Missing required inputs, or inputs are invalid.'});
 };
 
 handlers.notFound = (data, callback) => callback(404);
