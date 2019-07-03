@@ -42,7 +42,7 @@ header {
     width: 50%; }
   header .cart-count {
     color: white;
-    background: #74d14c;
+    background: #801400;
     font-size: 0.5625rem;
     margin-top: -5px;
     margin-right: 0;
@@ -128,19 +128,16 @@ header {
   margin: auto; }
 
 a {
-  color: #74d14c;
+  color: #801400;
   font-weight: 600; }
   a:visited, a:active {
-    color: #74d14c; }
+    color: #801400; }
   a:hover {
     text-decoration: underline; }
-  a.btn-red {
-    background: #9a0607;
-    border-color: #9a0607; }
-  a.btn-link, a.btn-order, a.btn-cancel, a.btn-continue, a.btn-red {
+  a.btn-link, a.btn-order, a.btn-cancel, a.btn-continue {
     color: white;
     text-decoration: none; }
-    a.btn-link:visited, a.btn-link:active, a.btn-link:hover, a.btn-link:btn-red, a.btn-order:visited, a.btn-order:active, a.btn-order:hover, a.btn-order:btn-red, a.btn-cancel:visited, a.btn-cancel:active, a.btn-cancel:hover, a.btn-cancel:btn-red, a.btn-continue:visited, a.btn-continue:active, a.btn-continue:hover, a.btn-continue:btn-red, a.btn-red:visited, a.btn-red:active, a.btn-red:hover, a.btn-red:btn-red {
+    a.btn-link:visited, a.btn-link:active, a.btn-link:hover, a.btn-order:visited, a.btn-order:active, a.btn-order:hover, a.btn-cancel:visited, a.btn-cancel:active, a.btn-cancel:hover, a.btn-continue:visited, a.btn-continue:active, a.btn-continue:hover {
       color: white;
       text-decoration: none; }
 
@@ -177,6 +174,9 @@ input, select {
   display: block;
   width: 100%;
   box-sizing: border-box; }
+
+input[type="text"]:disabled, input[type="email"]:disabled, select:disabled {
+  background: #eee; }
 
 a {
   text-decoration: none; }
@@ -267,9 +267,9 @@ body.loggedin header ul li.loggedout {
   font-size: 0.9rem; }
 
 .btn {
-  background: #74d14c;
+  background: #801400;
   color: white;
-  border: 1px solid #74d14c;
+  border: 1px solid #801400;
   border-radius: 2px;
   cursor: pointer;
   padding-top: 10px;
@@ -354,17 +354,15 @@ body.loggedin header ul li.loggedout {
   margin-bottom: 1rem;
   border: 1px solid #dee2e6;
   border-spacing: 0; }
-  .table thead tr {
-    background: white; }
-    .table thead tr th {
-      padding-top: 12px;
-      padding-right: 10px;
-      padding-bottom: 12px;
-      padding-left: 10px;
-      border-bottom: 1px solid #dee2e6;
-      border-top: 1px solid #dee2e6;
-      background-color: #74d14c;
-      color: white; }
+  .table thead tr th {
+    padding-top: 12px;
+    padding-right: 10px;
+    padding-bottom: 12px;
+    padding-left: 10px;
+    border-bottom: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    background-color: #801400;
+    color: white; }
   .table tr:nth-of-type(even) {
     background: rgba(238, 245, 122, 0.5); }
   .table tr:nth-of-type(odd) {

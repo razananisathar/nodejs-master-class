@@ -4,8 +4,9 @@
   <section class="edit" id="editAccount">
     <h2>Edit Account</h2>
     <p>Edit your account basic information</p>
-    <div class="form-response"></div>
-    <form class="form-horizontal" id="frmAccEdit" action="/api/users" method="PUT" novalidate>
+    <div class="form-response" id="editResponse"></div>
+    <form class="form-horizontal" id="frmAccEdit" name="frm_acc_edit" action="/api/users" method="PUT" novalidate>
+    <input type="hidden" name="_method" value="PUT"/>
         <div class="form-row">
           <label for="">First Name</label>
           <input type="text" name="firstName" value="">
@@ -47,10 +48,13 @@
       </form>
       <hr>
       <h2>Change Password</h2>
-      <form class="form-horizontal" id="frmAccPassword" action="/api/users" method="PUT">
+      <div class="form-response" id="passwordResponse"></div>
+      <form class="form-horizontal" id="frmAccPassword" name="frm_acc_password" method="PUT" action="/api/users" novalidate>
+      <input type="hidden" name="_method" value="PUT"/>
       <div class="form-row">
         <label for="">New Password</label>
         <input type="password" name="password" value="">
+          <p class="error"></p>
       </div>
       <div class="form-row">
         <input type="hidden" name="email" />
@@ -64,10 +68,11 @@
     <p class="alert alert-danger">
       Deleting your account will result in cancellation of your account permanently. You may no longer have access to your account or orders.
     </p>
-    <form class="form-horizontal" id="frmAccDelete" action="/api/users" method="DELETE">
+    <form class="form-horizontal" id="frmAccDelete" name="frm_acc_delete" action="/api/users" method="DELETE">
+    <input type="hidden" name="_method" value="DELETE"/>
     <div class="form-row">
       <input type="hidden" name="email" />
-      <button type="submit" name="deleteAccount" class="btn btn-delete btn-red">Delete Account</button>
+      <button type="submit" name="deleteAccount" class="btn btn-delete">Delete Account</button>
       <a href="/" class="btn btn-cancel">Cancel</a>
     </div>
     </form>

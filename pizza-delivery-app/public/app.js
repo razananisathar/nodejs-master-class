@@ -491,14 +491,14 @@ app.addToCart = (item) => {
     cartDIV.addEventListener('click', (e) => {
       e.preventDefault();
       if(e.target && e.target.getAttribute('class') == 'btn-delete') {
+        const {id, items } =  app.config.sessionCart;
         const index = e.target.dataset.index;
-        const cartItems = app.config.sessionCart.items;
 
-        cartItems.splice(index, 1);
+        items.splice(index, 1);
 
         const payload = {};
-        payload['id'] = app.config.sessionCart.id;
-        payload['items'] = cartItems;
+        payload['id'] = id;
+        payload['items'] = items;
 
         const elErrorDiv = document.getElementById('noCart');
         const elPara = elErrorDiv.querySelector('.alert');
@@ -506,29 +506,38 @@ app.addToCart = (item) => {
         app.client.request(undefined, 'api/carts', 'PUT', undefined, payload, (statusCode, responsePayload) => {
           if(statusCode == 200) {
 
-            if(elErrorDiv.getAttribute('class') !== 'hide') {
-              elErrorDiv.classList.add('hide');
-              document.getElementById('checkout').classList.remove('hide');
-            }
+            const queryStringObject = {
+              id
+            };
 
-            app.setSessionCart(responsePayload);
-            const { items } = responsePayload;
+            app.client.request(undefined, 'api/carts', 'GET', queryStringObject, undefined, (statuCode, responsePayload) => {
+              if(statusCode == 200) {
+                if(elErrorDiv.getAttribute('class') !== 'hide') {
+                  elErrorDiv.classList.add('hide');
+                  document.getElementById('checkout').classList.remove('hide');
+                }
 
-            if(items.length == 0) {
-              elErrorDiv.classList.remove('hide');
-              elPara.classList.remove('alert-danger');
-              elPara.innerText = 'Your cart is empty.';
-              elPara.classList.add('alert-warning');
+                app.setSessionCart(responsePayload);
+                const { items } = responsePayload;
 
-              document.getElementById('checkout').classList.add('hide');
-            }
+                if(items.length == 0) {
+                  elErrorDiv.classList.remove('hide');
+                  elPara.classList.remove('alert-danger');
+                  elPara.innerText = 'Your cart is empty.';
+                  elPara.classList.add('alert-warning');
 
-            const tbody = document.getElementById('tbodyCart');
+                  document.getElementById('checkout').classList.add('hide');
+                }
 
-            while (tbody.firstChild) {
-              tbody.removeChild(tbody.firstChild);
-            }
-            app.loadCartData();
+                const tbody = document.getElementById('tbodyCart');
+
+                while (tbody.firstChild) {
+                  tbody.removeChild(tbody.firstChild);
+                }
+                app.loadCartData();
+              }
+            });
+
           } else {
             const { Error } = responsePayload;
 
@@ -614,7 +623,7 @@ app.bindAllForms = () => {
 
             const formId = allForms[i].id;
             const path = allForms[i].action;
-            const method = allForms[i].method.toUpperCase();
+            let method = allForms[i].method.toUpperCase();
 
             // Turn inputs to payload.
             const payload = {};
@@ -630,6 +639,10 @@ app.bindAllForms = () => {
                 let nameOfElement = elements[j].name;
                 let valueOfElement = elements[j].value;
                 payload[nameOfElement] = valueOfElement;
+
+                if(nameOfElement == '_method') {
+                  method = valueOfElement.toUpperCase();
+                }
 
                 //  Convert string to number for qty field.
                 if(allForms[i].id == 'frmCart' && elements[j].type == 'number' && elements[j].name == 'qty') {
@@ -658,7 +671,7 @@ app.bindAllForms = () => {
           // If the method is DELETE, the payload should be a queryStringObject instead
           const queryStringObject = (method == 'DELETE') ? payload : {};
 
-            app.client.request(undefined, path, method, undefined, payload, (statusCode, responsePayload) => {
+            app.client.request(undefined, path, method, queryStringObject, payload, (statusCode, responsePayload) => {
               if(statusCode == 200) {
                   app.formResponseProcessor(formId, payload, responsePayload);
               } else if(statusCode == 403) {
@@ -706,13 +719,6 @@ app.validateForm = (elements) => {
         } else if(elements[i].type == 'email' && !emailPattern.test(elements[i].value)) {
             error.innerText = 'Invalid email address.';
         }
-        // else if (elements[i].type == 'text' && !alphaPattern.test(elements[i].value) &&
-        //            elements[i].name == 'firstName' || elements[i].name == 'lastName' || elements[i].name == 'city' || elements[i].name == 'state' || elements[i].name == 'cardName') {
-        //     error.innerText = 'This field requires only letters.';
-        // }
-        // else if(elements[i].name == 'cardNumber') {
-              // card no digits.
-        // }
         else if(elements[i].name == 'cardExpireYear' && !yearPattern.test(elements[i].value)) {
             error.innerText = 'This field requires only 4 digits.';
         } else if (elements[i].name == 'cardExpireYear' && parseInt(elements[i].value) < thisYear) {
@@ -763,8 +769,32 @@ app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
       app.getCartData();
       window.location = '/menu';
     break;
+    case 'frmAccEdit':
+      const elDiv = document.getElementById('editResponse')
+      const elMsgPara = document.createElement('p');
+      const classes = ['alert', 'alert-success'];
+      elMsgPara.classList.add(...classes);
+      elMsgPara.innerText = 'Your user account updated successfully.';
+
+      if(!elDiv.hasChildNodes()) {
+          elDiv.appendChild(elMsgPara);
+      }
+    break;
+    case 'frmAccPassword':
+      const elResponseDiv = document.getElementById('passwordResponse')
+      const elPara = document.createElement('p');
+      const cls = ['alert', 'alert-success'];
+      elPara.classList.add(...cls);
+      elPara.innerText = 'Your user password changed successfully. Please wait, redirecting to login...';
+
+      if(!elResponseDiv.hasChildNodes()) {
+          elResponseDiv.appendChild(elPara);
+      }
+      setTimeout(()=> window.location = '/account/login', 10000);
+    break;
     case 'frmAccDelete':
       window.location = '/account/deleted';
+      app.setLoggedInClass(false);
     break;
     case 'frmOrder':
       window.location = '/order/confirm';

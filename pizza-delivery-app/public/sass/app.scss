@@ -40,7 +40,7 @@ header {
   }
   .cart-count {
     color:adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
-    background: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+    background: #801400;
     font-size: $font-size * 0.5;
     @include margin(-5px, 0, 0, -10px);
     @include padding(5px, 5px, 5px, 5px);
@@ -128,27 +128,22 @@ header {
 }
 
 a {
-  color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+  color: #801400;
   font-weight: 600;
 
   &:visited, &:active {
-    color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+    color: #801400;
   }
 
   &:hover {
     text-decoration: underline;
   }
 
-  &.btn-red {
-    background: darken(saturate(adjust-hue($error-color, -6), 14.21), 34.31);
-    border-color: darken(saturate(adjust-hue($error-color, -6), 14.21), 34.31);
-  }
-
-  &.btn-link, &.btn-order, &.btn-cancel, &.btn-continue, &.btn-red {
+  &.btn-link, &.btn-order, &.btn-cancel, &.btn-continue {
     color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
     text-decoration: none;
 
-    &:visited, &:active, &:hover, &:btn-red {
+    &:visited, &:active, &:hover {
       color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
       text-decoration: none;
     }
@@ -190,6 +185,10 @@ input, select {
     display: block;
     width: 100%;
     box-sizing: border-box;
+}
+
+input[type="text"]:disabled, input[type="email"]:disabled, select:disabled {
+  background: #eee;
 }
 
 a {
@@ -304,9 +303,9 @@ body {
 
 
 .btn {
-   background: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+   background: #801400;
    color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
-   border: 1px solid lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+   border: 1px solid #801400;
    border-radius: 2px;
    cursor: pointer;
    @include padding(10px, 12px, 10px, 12px);
@@ -411,13 +410,13 @@ body {
 
   thead {
     tr {
-      background: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
+      // background: #801400;
 
       th {
         @include padding(12px, 10px,12px, 10px);
         border-bottom: 1px solid lighten(saturate($body-color, 2.98), 74.12);
         border-top: 1px solid lighten(saturate($body-color, 2.98), 74.12);
-        background-color: lighten(saturate(adjust-hue($body-color, -108), 48.30), 41.37);
+        background-color: #801400;
         color: adjust-color($body-color, $red: 255, $green: 255, $blue: 255);
       }
     }
