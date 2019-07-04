@@ -1,6 +1,6 @@
 /**
  * @module lib/handlers
- * Router handler functions.
+ * Handle API request Routes.
  */
 
 /** Module dependencies */

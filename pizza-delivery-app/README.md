@@ -18,7 +18,8 @@ You need a Stripe account and Mailgun account.
 - Get a copy of the `pizza-delivery-app` by cloning or downloading.
 - Open `lib/config.js`. Insert Stripe and Mailgun api details.
 - Open terminal, navigate to application directory. Run `node index.js`.
-- The server start running on `port 3000`.
+- The http server start running on `port 3000` and the https server listens on `port 3001` by default.
+- See `lib/config.js` for production.
 
 ## API Documentation
 

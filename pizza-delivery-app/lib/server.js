@@ -1,9 +1,11 @@
 /**
  * @module lib/server
+ * Initiate http and https server module.
  */
 
 /** Module dependencies */
 const http = require('http');
+const https = require('https');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
@@ -17,7 +19,17 @@ const debuglog = util.debuglog('server');
  /** Instantiate the server module object */
 const server = {};
 
+/** Https configuration */
+const httpsOptions = {
+  'key': fs.readFileSync(path.join(__dirname, '/../https/key.pem')),
+  'cert': fs.readFileSync(path.join(__dirname, '/../https/cert.pem'))
+}
+
+/** Instantiate the http server */
 server.httpServer = http.createServer((req, res) => server.unifiedServer(req, res));
+
+/** Instantiate the http server */
+server.httpsServer = https.createServer(httpsOptions, (req, res) => server.unifiedServer(req, res));
 
 server.unifiedServer = (req, res) => {
   const {pathname, query} = url.parse(req.url, true);
@@ -71,7 +83,11 @@ server.routers = {
 
 /** Server init */
 server.init = () => {
-  server.httpServer.listen(config.httpPort, () => console.log('\x1b[36m%s\x1b[0m', `The server is listening on port ${config.httpPort}`));
+  // Http server.
+  server.httpServer.listen(config.httpPort, () => console.log('\x1b[36m%s\x1b[0m', `The http server is listening on port ${config.httpPort}`));
+
+  // Https server.
+  server.httpsServer.listen(config.httpsPort, () => console.log('\x1b[36m%s\x1b[0m', `The https server is listening on port ${config.httpsPort}`));
 }
 
 module.exports = server;
