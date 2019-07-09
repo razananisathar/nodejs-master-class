@@ -1,6 +1,6 @@
 /**
  * @module lib/handlers
- * Router handler functions.
+ * Handle API request Routes.
  */
 
 /** Module dependencies */
@@ -72,7 +72,7 @@ handlers._users.post = (data, callback) => {
               };
 
               // Create new user.
-              _data.create('users', email, userObj, (err, data) => {
+              _data.create('users', email, userObj, (err) => {
                 if(!err) callback(200);
                 else callback(500, {'Error': 'Could not create a new user.'});
               });
@@ -132,7 +132,7 @@ handlers._users.put = (data, callback) => {
               if(password) userData.hashPassword = helpers.hash(password);
 
                    // Update user.
-                  _data.update('users', email, userData, (err, data) => {
+                  _data.update('users', email, userData, (err) => {
                     if(!err) callback(200);
                     else callback(500, {'Error': 'Could not update the user.'});
                   });
@@ -199,16 +199,16 @@ handlers._users.delete = (data, callback) => {
         // Lookup for user who matches that email.
         _data.read('users', email, (err, userData) => {
           if(!err && userData) {
+            let { cartId, orders } = userData;
+            orders = typeof(orders) == 'object' && orders instanceof Array ? orders : [];
+            cartId = typeof(cartId) == 'string' ? cartId : false;
+            const ordersToDelete = orders.length;
+
             // Delete the user.
             _data.delete('users', email, (err) => {
               if(!err) {
-                let { cartId, orders } = userData;
-                orders = typeof(orders) == 'object' && orders instanceof Array ? orders : [];
-                cartId = typeof(cartId) == 'string' ? cartId : false;
-                const ordersToDelete = orders.length;
-
                 let cartDeletionError = false;
-                let allOrderDeletionError = false;
+                let allOrdersDeletionError = false;
 
                 // Delete all user's orders (if any).
                 if(ordersToDelete > 0) {
@@ -216,16 +216,28 @@ handlers._users.delete = (data, callback) => {
                   let orderDeletionErrors = false;
 
                   for(const orderId of orders) {
-                    _data.delete('orders', orderId, (err) => {
-                        if(err) orderDeletionErrors = true;
+                    _data.read('orders', orderId, (err, orderData) => {
+                        let cart = orderData.cartId;
+                        cart = typeof(cart) == 'string' ? cart : false;
 
-                        ordersDeleted++;
+                        if(cart) {
+                          _data.delete('orders', orderId, (err) => {
+                            if(!err) {
+                              // Delete cart record related to the order.
+                              _data.delete('carts', cart, (err) => {
+                                  if(err) orderDeletionErrors = true;
+
+                                  ordersDeleted++;
+                              });
+                            } else orderDeletionErrors = true;
+                          });
+                        }
                     });
                   }
 
                   // All orders not deleted.
                   if(ordersToDelete == ordersDeleted && orderDeletionErrors) {
-                      allOrderDeletionError = true;
+                      allOrdersDeletionError = true;
                   }
                 }
 
@@ -236,8 +248,8 @@ handlers._users.delete = (data, callback) => {
                   });
                 }
 
-                if(cartDeletionError && !allOrderDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete user\'s active cart. Active cart may not have been deleted from the system successfully.'});
-                else if(!cartDeletionError && allOrderDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete all of the user\'s orders. All orders may not have been deleted from the system successfully.'});
+                if(cartDeletionError && !allOrdersDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete user\'s active cart. Active cart may not have been deleted from the system successfully.'});
+                else if(!cartDeletionError && allOrdersDeletionError) callback(500, {'Error': 'Errors encountered while attempting to delete all of the user\'s orders. All orders may not have been deleted from the system successfully.'});
                 else callback(200);
 
               } else callback(500, {'Error': 'Could not delete the specified user.'})

@@ -87,7 +87,7 @@ lib.update = (dir, file, data, callback) => {
  * @param {dir} string - directory name
  * @param {file} string - file name
  */
-lib.delete = (dir,file,callback) => {
+lib.delete = (dir, file, callback) => {
   // Unlink the file from the filesystem
   fs.unlink(`${lib.baseDir}${dir}/${file}.json`, (err) => callback(err));
 };

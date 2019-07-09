@@ -1,13 +1,13 @@
 # Pizza Delivery Service App
 
 ## Introduction
-Cheesy Delights, Inc. Pizza delivery service API is a REST based and always returns responses in JSON.
+Cheesy Delights, Inc. pizza delivery service API is a REST based and always returns responses in JSON.
 
 This API provides a customer to sign up with the service, add items to the shopping cart, place an order and checkout an order by paying through charge card. Payments are handled through [Stripe API](https://stripe.com/docs/api). User receives an order receipt to user's email and [Mailgun API](https://documentation.mailgun.com/en/latest/user_manual.html) used for delivering emails.
 
 ## Prerequisites
 
-You need a Stripe account and Mailgun account.
+You need a Stripe account and a Mailgun account.
 
 - Create a [Stripe account](https://stripe.com) and get the `API key` and `secret`.
 - Create a [Mailgun account](https://www.mailgun.com/) and get the `API key`.
@@ -18,7 +18,8 @@ You need a Stripe account and Mailgun account.
 - Get a copy of the `pizza-delivery-app` by cloning or downloading.
 - Open `lib/config.js`. Insert Stripe and Mailgun api details.
 - Open terminal, navigate to application directory. Run `node index.js`.
-- The server start running on `port 3000`.
+- The http server start running on `port 3000` and the https server listens on `port 3001` by default.
+- See `lib/config.js` for production.
 
 ## API Documentation
 
@@ -39,7 +40,7 @@ Represents token details.
 **Token attributes:**
 - id `(String)`: unique identifier.
 - email `(String)`: email id of the user.
-- expires `(Number)`: token expiration time, a token    expires after one hour from current time.
+- expires `(Number)`: token expiration time, a token expires after one hour from current time.
 - extend `(boolean)`: extend the token expiration time.
 
 **Requests:**
@@ -203,7 +204,7 @@ A pizza represented by an item object.
 
 - **GET [/api/items/:id]**
 
-  Retrieves an item by it's id. Item id is required.
+  Retrieve an item by it's id. Item id is required.
 
   Sample request:
   ```
@@ -239,7 +240,7 @@ A pizza represented by an item object.
 
 ## Users
 
-A customer can place orders by creating a user account.The API allows to create, delete, read, and update a user object.  
+A customer can place orders by creating a user account. The API allows to create, delete, read, and update a user object.  
 
 **User attributes:**
 - firstName `(String)`: first name of the user.
@@ -347,12 +348,15 @@ A customer can place orders by creating a user account.The API allows to create,
 
 ## Carts
 
-A user can add items to a cart. The API allows to create, delete, read, and update a cart object.  
+A user can add items to a cart. The API allows to create, read, and update a cart object.  
 
 Cart object represents a cart.
 
 **Cart attributes:**
-- items `(Array)`: Array of item objects.
+- id `(String)`: unique identifier of the cart.
+- email `(String)`: user's email address.
+- items `(Array)`: array of items.
+- total `(Number)`: total amount of the cart items.
 
   An item object attributes are;
     - name `(String)`: name of the item.
@@ -373,7 +377,7 @@ Cart object represents a cart.
       "name": "Chicken Bacon Mayo",
       "pan":"large",
       "price":5.40,
-      "qty":1,
+      "qty":1
     }
   ]
   ```
@@ -385,7 +389,7 @@ Cart object represents a cart.
 
   Responses: 200, 400, 403, 500
 
-- **PUT  [/api/cart]**
+- **PUT  [/api/carts]**
 
   Update a cart. Cart id is required and token must be passed in the headers.
 
@@ -397,13 +401,13 @@ Cart object represents a cart.
       "name": "Chicken Bacon Mayo",
       "pan":"large",
       "price":5.40,
-      "qty":1,
+      "qty":1
     },
     {
       "name": "7 Cheese Pizza",
       "pan": "medium",
       "price": 5.40,
-      "qty": 1,
+      "qty": 1
     }
   ]
   ```
@@ -433,13 +437,13 @@ Cart object represents a cart.
         "name": "Chicken Bacon Mayo",
         "pan":"large",
         "price":5.40,
-        "qty":1,
+        "qty":1
       },
       {
         "name": "7 Cheese Pizza",
         "pan": "medium",
         "price": 5.40,
-        "qty": 1,
+        "qty": 1
       }
     ]
   }
@@ -457,8 +461,8 @@ A user can create an order. The API allows to create, and read order object.
 - cardName `(String)`: name in the charge card.
 - cardNumber `(String)`: 16 digits number in the charge card.
 - cardCvc `(String)`: cvc number of the charge card.
-- cardExpireMonth `(Number)`:
-- cardExpireYear `(Number)`: the charge card expiration year
+- cardExpireMonth `(Number)`: the charge card expiration month.
+- cardExpireYear `(Number)`: the charge card expiration year.
 - payment - `(String)`: status of the Stripe payments. There are three states. `pending`, `succeeded` and `failed`.
 - chargeId - Stripe charge object id.
 - receipt -`(String)`: receipt status delivered through Mailgun email service. There are three states. `pending`, `sent` and `failed`.
@@ -477,7 +481,7 @@ A user can create an order. The API allows to create, and read order object.
     "cardName": "J Harley",
     "cardNumber": "4242 4242 4242 4242",
     "cardCvc": "234",
-    "cardExpireMonth": 02,
+    "cardExpireMonth": 12,
     "cardExpireMonth": 2020
   }
 

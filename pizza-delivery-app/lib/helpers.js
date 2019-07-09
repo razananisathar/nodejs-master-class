@@ -5,11 +5,11 @@
 
 /** Module dependencies */
 const crypto = require('crypto');
-const config = require('./config');
 const https = require('https');
 const querystring = require('querystring');
 const path = require('path');
 const fs = require('fs');
+const config = require('./config');
 
  /** Instantiate the helpers module object */
 const helpers = {};

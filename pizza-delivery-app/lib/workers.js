@@ -1,6 +1,7 @@
 /**
  * @module lib/workers
- * Background workers.
+ * Background workers watch for order submissions.
+ * Gather order details of failed payments and failed email receipt and create logs.
  */
 
 /** Module dependencies */
@@ -48,12 +49,12 @@ workers.performOrderCheck = (orderData) => {
   deliveredId = typeof(deliveredId) == 'string' && deliveredId.trim().length > 0 ? deliveredId.trim() : false;
 
   // If all checks pass, pass the data along to the next step in the process.
-  if(id && email && cartId && payment && chargeId && receipt && deliveredId) {
+  if(id && email && cartId && payment && receipt) {
 
     if(payment == 'failed' || receipt == 'failed') {
       _data.read('carts', cartId, (err, cartData) => {
           if(!err && cartData) {
-            workers.log(orderData, cartData);
+            workers.log(id, email, payment, chargeId, receipt, deliveredId, cartData);
           } else debug('Could not find the cart related to given order.');
       });
     }
@@ -62,16 +63,21 @@ workers.performOrderCheck = (orderData) => {
 
 /**
  * Perform order check.
- *
+ * @param {orderId} string - order id
+ * @param {email} string - user's email
+ * @param {payment} string - payment status
+ * @param {chargeId} string - Stripe Charge object id
+ * @param {receipt} boolean - order email receipt status
+ * @param {deliveredId} string - email delivery id
+ * @param {cartData} object - user's order cart data
  */
-workers.log = (orderData, cartData) => {
-  const { id, email, cartId, payment, chargeId, receipt, deliveredId } = orderData;
-  const { items, total } = cartData;
+workers.log = (orderId, email, payment, chargeId, receipt, deliveredId, cartData) => {
+  const {id, items, total } = cartData;
 
   const logData = {
-    'orderId' : id,
+    'orderId' : orderId,
     email,
-    cartId,
+    'cartId': id,
     items,
     total,
     payment,
@@ -83,7 +89,7 @@ workers.log = (orderData, cartData) => {
   const logString = JSON.stringify(logData);
 
   // Determine the name of the log file.
-  const logFileName = id;
+  const logFileName = orderId;
 
   // Append the log string to the file.
   _logs.append(logFileName, logString, (err) => {
@@ -98,7 +104,7 @@ workers.log = (orderData, cartData) => {
 workers.loop = () => {
   setInterval(() => {
     workers.gatherAllOrders();
-  },1000 * 60 * 60);
+  }, 1000 * 60 * 60);
 };
 
 /**
@@ -107,8 +113,7 @@ workers.loop = () => {
 workers.rotateLogs = () => {
   // List all the (non compressed) log files.
   _logs.list(false, (err, logs) => {
-    const len = logs.length;
-    if(!err && logs && len > 0){
+    if(!err && logs && logs.length > 0) {
         logs.forEach( logName => {
             // Compress the data to a different file.
             const logId = logName.replace('.log','');
@@ -135,7 +140,7 @@ workers.rotateLogs = () => {
 workers.logRotationLoop = () => {
   setInterval(() => {
      workers.rotateLogs();
-  }, 1000 * 60 * 60 * 24); 
+  }, 1000 * 60 * 60 * 24);
 };
 
 /**
