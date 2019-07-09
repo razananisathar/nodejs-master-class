@@ -7,14 +7,13 @@
  const fs = require('fs');
  const path = require('path');
  const zlib = require('zlib');
- // const debug = util.debug('logs');
+ // const debug = util.debuglog('logs');
 
 /** Instantiate the lib module object */
  const lib = {};
 
 /** Base directory of data folder */
  lib.baseDir = path.join(__dirname,'/../.logs/');
- console.log(__dirname);
 
  /**
   * Append a string to a file. Create the file if it does not exist.

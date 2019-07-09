@@ -63,7 +63,13 @@ workers.performOrderCheck = (orderData) => {
 
 /**
  * Perform order check.
- *
+ * @param {orderId} string - order id
+ * @param {email} string - user's email
+ * @param {payment} string - payment status
+ * @param {chargeId} string - Stripe Charge object id
+ * @param {receipt} boolean - order email receipt status
+ * @param {deliveredId} string - email delivery id
+ * @param {cartData} object - user's order cart data
  */
 workers.log = (orderId, email, payment, chargeId, receipt, deliveredId, cartData) => {
   const {id, items, total } = cartData;
@@ -107,7 +113,6 @@ workers.loop = () => {
 workers.rotateLogs = () => {
   // List all the (non compressed) log files.
   _logs.list(false, (err, logs) => {
-    console.log(logs, err);
     if(!err && logs && logs.length > 0) {
         logs.forEach( logName => {
             // Compress the data to a different file.
