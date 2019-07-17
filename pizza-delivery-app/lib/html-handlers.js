@@ -107,7 +107,7 @@ handlers.checkout = (data, callback) => {
 
   // Reject any request that isn't a GET.
   if(method == 'get') {
-     // Prepare data for interpolation @TODO add contents.
+     // Prepare data for interpolation.
      const templateData = {
        'page.title': 'Shopping Cart Checkout',
        'page.description': 'Checkout now to place your order.',
@@ -137,7 +137,7 @@ handlers.confirmOrder = (data, callback) => {
 
   // Reject any request that isn't a GET.
   if(method == 'get') {
-     // Prepare data for interpolation @TODO add contents.
+     // Prepare data for interpolation.
      const templateData = {
        'page.title': 'Order Confirmation',
        'page.description': 'Your order placed successfully.',
@@ -167,7 +167,7 @@ handlers.allOrders = (data, callback) => {
 
   // Reject any request that isn't a GET.
   if(method == 'get') {
-     // Prepare data for interpolation @TODO add contents.
+     // Prepare data for interpolation.
      const templateData = {
        'page.title': 'Orders',
        'page.description': '',
@@ -285,7 +285,7 @@ handlers.accountDeleted = (data, callback) => {
 
   // Reject any request that isn't a GET.
   if(method == 'get') {
-     // Prepare data for interpolation @TODO add contents.
+     // Prepare data for interpolation.
      const templateData = {
        'page.title': 'Account deleted',
        'page.description': 'Account delete confirmation.',

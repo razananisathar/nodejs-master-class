@@ -51,7 +51,9 @@
         </div>
       </form>
       <h2 class="headline">Payment</h2>
-      <p class="alert alert-info hide" id="orderMsg">Please wait. We are processing your order.</p>
+      <div class="form-response">
+        <p class="alert alert-info hide" id="orderMsg">Please wait. We are processing your order.</p>
+      </div>
       <form class="form-horizontal" name="frm_order" id="frmOrder" action="/api/orders" method="POST" novalidate>
         <div class="form-row">
           <label>Name on the Card</label>
@@ -98,7 +100,6 @@
           <button type="submit" name="btnSubmit" class="btn btn-submit pull-right btn-pay">Pay Now</button>
           <input type="hidden" name="cartId">
         </div>
-
       </form>
     </div>
   </div>

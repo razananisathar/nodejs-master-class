@@ -10,78 +10,50 @@
    'sessionCart': false
  };
 
-/** AJAX Client for RESTful API*/
+/** Interface for calling RESTful API */
  app.client = {};
 
 /** Interface for API calls.
- * @param {headers} object - request headers
- * @param {path} string - requested path
+ * @param {path} string - request path
  * @param {method} string - request method
  * @param {queryStringObject} object - request query parameters
  * @param {payload} object - request body payload
  */
-app.client.request = (headers, path, method, queryStringObject, payload, callback) => {
-  // Validate and set defaults.
-  headers = typeof(headers) == 'object' && headers !== null ? headers : {};
+app.client.request = (path, method, queryStringObject, payload, callback) => {
   path = typeof(path) == 'string' ? path : '/';
   method = typeof(method) == 'string' && ['POST','GET','PUT','DELETE'].indexOf(method.toUpperCase()) > -1 ? method.toUpperCase() : 'GET';
   queryStringObject = typeof(queryStringObject) == 'object' && queryStringObject !== null ? queryStringObject : {};
   payload = typeof(payload) == 'object' && payload !== null ? payload : {};
-  callback = typeof(callback) == 'function' ? callback : false;
 
-  // For each query string parameter sent, add it to the path.
-  let requestUrl = `${path}?`;
+  path = path.indexOf(window.location.origin) > -1 ? path : `${window.location.origin}${path}`;
 
-  let count = 0;
-  for(const key in queryStringObject) {
-    if(queryStringObject.hasOwnProperty(key)) {
-      count++;
-       // If at least one query string parameter has already been added, preprend new ones with an ampersand.
-      if(count > 1) requestUrl += '&';
+  // Construct request url.
+  const requestUrl = new URL(path);
 
-      // Add the key and value.
-      requestUrl += `${key}=${queryStringObject[key]}`;
+  const options = {
+    method,
+    headers: {
+      'Content-Type': 'application/json'
     }
-  }
+  };
 
-  // Form the http request as a JSON type.
-  const xhr = new XMLHttpRequest();
-  xhr.open(method, requestUrl, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-
-  // For each header sent, add it to the request.
-  for(const key in headers) {
-    if(headers.hasOwnProperty(key)) {
-      xhr.setRequestHeader(key, headers[key]);
-    }
-  }
-
-  // If there is a current session token set, add that as a header.
   if(app.config.sessionToken) {
-    xhr.setRequestHeader('token', app.config.sessionToken.id);
+    options.headers.token = app.config.sessionToken.id;
   }
 
-   // When the request comes back, handle the response.
-  xhr.onreadystatechange = () => {
-    if(xhr.readyState == XMLHttpRequest.DONE) {
-      const statusCode = xhr.status;
-      const responseReturned = xhr.responseText;
-
-      // Callback if requested.
-      if(callback) {
-        try {
-          const parsedResponse = JSON.parse(responseReturned);
-          callback(statusCode, parsedResponse);
-        } catch (e) {
-          callback(statusCode, false);
-        }
-      }
-    }
+  // Add query params.
+  if(method == 'GET' || method == 'DELETE') {
+    Object.keys(queryStringObject).forEach(key => requestUrl.searchParams.append(key, queryStringObject[key]));
   }
 
-  // Send the payload as JSON.
-  const payloadString = JSON.stringify(payload);
-  xhr.send(payloadString);
+  // Add body payload.
+  if(method == 'POST' || method == 'PUT') {
+    options.body =  JSON.stringify(payload);
+  }
+
+  fetch(requestUrl, options)
+    .then(res => res.json().then(data => callback(res.status, data)))
+    .catch(error => console.error('Error:', error));
 };
 
 /**
@@ -91,33 +63,33 @@ app.client.request = (headers, path, method, queryStringObject, payload, callbac
 app.loadMenuData = (bodyId) => {
   let elMenuDiv = document.getElementById('items');
 
-  app.client.request(undefined, 'api/menu', 'GET', undefined, undefined, (statusCode, responsePayload) => {
-      if(statusCode == 200 && responsePayload instanceof Array) {
-          let count = 0;
+  app.client.request('/api/menu', 'GET', undefined, undefined, (statusCode, responsePayload) => {
+    if(statusCode == 200 && responsePayload instanceof Array && responsePayload.length > 0) {
+      let count = 0;
 
-          for(const { id, name, description, vegetarian, image } of responsePayload) {
-             let elItemSection = `<section class="item" data-item-id="item${id}">
-                                  <div class="featured-img">
-                                    <img src="public/images/${image}" alt="${name}" class="">
-                                    <img class="type-icon" src="public/images/${(vegetarian)? 'veg-icon' : 'non-veg-icon'}.jpg" alt="${(vegetarian)? 'veg' : 'non-veg'}">
-                                  </div>
-                                  <h3>${name}</h3>
-                                  <p>${description.substr(0, description.indexOf('.'))}.</p>
-                                  <div class="item-order">
-                                    <a href="menu/item?id=${id}&name=${name}" class="btn btn-order" id="btnOrder${id}">Order Now</a>
-                                  </div>
-                                  </section>`;
+      for(const { id, name, description, vegetarian, image } of responsePayload) {
+         let elItemSection = `<section class="item" data-item-id="item${id}">
+                              <div class="featured-img">
+                                <img src="public/images/${image}" alt="${name}" class="">
+                                <img class="type-icon" src="public/images/${(vegetarian)? 'veg-icon' : 'non-veg-icon'}.jpg" alt="${(vegetarian)? 'veg' : 'non-veg'}">
+                              </div>
+                              <h3>${name}</h3>
+                              <p>${description.substr(0, description.indexOf('.'))}.</p>
+                              <div class="item-order">
+                                <a href="menu/item?id=${id}&name=${name}" class="btn btn-order" id="btnOrder${id}">Order Now</a>
+                              </div>
+                              </section>`;
 
-              count++;
-              elMenuDiv.insertAdjacentHTML('afterbegin', elItemSection);
+          count++;
+          elMenuDiv.insertAdjacentHTML('afterbegin', elItemSection);
 
-              // Load index page items.
-              if(bodyId == 'index' && count == 3) break;
-          }
-      } else {
-          elMenuDiv.classList.add('hide');
-          document.getElementById('noItems').classList.remove('hide');
+          // Load index page items.
+          if(bodyId == 'index' && count == 3) break;
       }
+    } else {
+        elMenuDiv.classList.add('hide');
+        document.getElementById('noItems').classList.remove('hide');
+    }
   });
 };
 
@@ -131,52 +103,52 @@ app.loadItemData = () => {
   const id = urlParams.get('id');
   const queryStringObject = { 'id': id };
 
-  app.client.request(undefined, 'api/items', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
-    if(statusCode == 200) {
-        const { id, name, description, vegetarian, image, prices } = responsePayload;
+  app.client.request('/api/items', 'GET', queryStringObject, undefined, (statusCode, response) => {
+      if(statusCode == 200) {
+          const { id, name, description, vegetarian, image, prices } = response;
 
-        const elPanSelect = document.createElement('select');
-        elPanSelect.setAttribute('id', 'selectPanType');
-        elPanSelect.setAttribute('name', 'pan');
+          const elPanSelect = document.createElement('select');
+          elPanSelect.setAttribute('id', 'selectPanType');
+          elPanSelect.setAttribute('name', 'pan');
 
-        for(const key in prices) {
-          const { pan, price } = prices[key];
-          const panOptions = `<option value="${pan}" data-pan="${pan}" data-price="${price.toFixed(2)}" selected="${pan == 'small'}">${pan.charAt(0).toUpperCase()+ pan.slice(1)}</option>`;
-          elPanSelect.insertAdjacentHTML('afterbegin', panOptions);
-        }
+          for(const key in prices) {
+            const { pan, price } = prices[key];
+            const panOptions = `<option value="${pan}" data-pan="${pan}" data-price="${price.toFixed(2)}" selected="${pan == 'small'}">${pan.charAt(0).toUpperCase()+ pan.slice(1)}</option>`;
+            elPanSelect.insertAdjacentHTML('afterbegin', panOptions);
+          }
 
-        const elItemSection = `<div class="column-2">
-                                  <img src="public/images/${image}" alt="${name}" class="pull-right">
-                               </div>
-                               <div class="column-2">
-                                  <h2 class="headline m-0">${name}</h2>
-                                  <p>${description}</p>
-                                  <p><b>Type:</b> ${(vegetarian) ? 'Veg': 'Non-Veg'}</p>
-                                  <p class="price item-desc">$ ${elPanSelect.options[elPanSelect.options.selectedIndex].dataset.price}</p>
-                                  <div class="form-row item-desc select-pan">
-                                  </div>
-                                  <div class="form-row item-desc">
-                                    <input type="number" name="qty" min="1" max="10" value="1" placeholder="Qty">
-                                    <p class="error"></p>
-                                  </div>
-                                  <div class="form-row item-desc">
-                                    <input type="hidden" name="name" value="${name}">
-                                    <button type="submit" class="btn mlr-20">Add to cart</button>
-                                  </div>
-                                  <br>
-                                  <a href="/menu" class="btn btn-continue">Continue Shopping</a>
-                               </div>`;
+          const elItemSection = `<div class="column-2">
+                                    <img src="public/images/${image}" alt="${name}" class="pull-right">
+                                 </div>
+                                 <div class="column-2">
+                                    <h2 class="headline m-0">${name}</h2>
+                                    <p>${description}</p>
+                                    <p><b>Type:</b> ${(vegetarian) ? 'Veg': 'Non-Veg'}</p>
+                                    <p class="price item-desc">$ ${elPanSelect.options[elPanSelect.options.selectedIndex].dataset.price}</p>
+                                    <div class="form-row item-desc select-pan">
+                                    </div>
+                                    <div class="form-row item-desc">
+                                      <input type="number" name="qty" min="1" max="10" value="1" placeholder="Qty">
+                                      <p class="error"></p>
+                                    </div>
+                                    <div class="form-row item-desc">
+                                      <input type="hidden" name="name" value="${name}">
+                                      <button type="submit" class="btn mlr-20">Add to cart</button>
+                                    </div>
+                                    <br>
+                                    <a href="/menu" class="btn btn-continue">Continue Shopping</a>
+                                 </div>`;
 
-        elItemDiv.insertAdjacentHTML('afterbegin', elItemSection);
-        elItemDiv.querySelector('.select-pan').append(elPanSelect);
+          elItemDiv.insertAdjacentHTML('afterbegin', elItemSection);
+          elItemDiv.querySelector('.select-pan').append(elPanSelect);
 
-        const elErrorPara = document.createElement('p');
-        elErrorPara.setAttribute('class', 'error');
-        elItemDiv.querySelector('.select-pan').append(elErrorPara);
-    } else {
-      document.getElementById('noItem').classList.remove('hide');
-      document.querySelector('form[name="frmCart"]').classList.add('hide');
-    }
+          const elErrorPara = document.createElement('p');
+          elErrorPara.setAttribute('class', 'error');
+          elItemDiv.querySelector('.select-pan').append(elErrorPara);
+      } else {
+        document.getElementById('noItem').classList.remove('hide');
+        document.querySelector('form[name="frmCart"]').classList.add('hide');
+      }
   });
 };
 
@@ -194,8 +166,10 @@ app.loadAccountData = (bodyId) => {
          email
       };
 
-      app.client.request(undefined, 'api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
+
+      app.client.request('/api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
         if(statusCode == 200) {
+
           const { firstName, lastName, email, address, city, state, postalCode } = responsePayload;
             // Bind data on edit account form.
             if(bodyId == 'accountSettings') {
@@ -231,7 +205,7 @@ app.loadAccountData = (bodyId) => {
 };
 
 /**
- * Display all orders. @TODO test.
+ * Display all orders.
  */
 app.loadOrdersData = () => {
   let { email } = app.config.sessionToken;
@@ -243,9 +217,9 @@ app.loadOrdersData = () => {
        email
     };
 
-    app.client.request(undefined, 'api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
+    app.client.request('/api/users', 'GET', queryStringObject, undefined, (statusCode, response) => {
       if(statusCode == 200) {
-        let { orders  } = responsePayload;
+        let { orders  } = response;
 
         orders = typeof(orders) == 'object' && orders instanceof Array ? orders : [];
 
@@ -255,9 +229,9 @@ app.loadOrdersData = () => {
           orders.forEach(orderId => {
               const newQueryStringObject = {'id': orderId };
 
-              app.client.request(undefined, 'api/orders', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
+              app.client.request('/api/orders', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
                 let elRow;
-                if(statusCode == 200) {
+                if(statusCode) {
                     const { id, receipt, chargeId, payment, deliveredId } = responsePayload;
 
                     elRow = `<tr>
@@ -283,7 +257,7 @@ app.loadOrdersData = () => {
 };
 
 /**
- * Load cart data on checkout page. @TODO..
+ * Load cart data on checkout page.
  */
  app.loadCartData = () => {
   if(app.config.sessionToken)  {
@@ -376,7 +350,7 @@ app.getCartData = () => {
           email
        };
 
-       app.client.request(undefined, 'api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
+       app.client.request('/api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
              if(statusCode == 200) {
                const { cartId } = responsePayload;
 
@@ -384,7 +358,7 @@ app.getCartData = () => {
                   // Get cart data.
                   const newQueryStringObject = { 'id': cartId };
 
-                  app.client.request(undefined, 'api/carts', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
+                  app.client.request('/api/carts', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
                     if(statusCode == 200) app.setSessionCart(responsePayload);
                     else app.setSessionCart(false);
                   });
@@ -409,9 +383,9 @@ app.getCartData = () => {
        email
      };
 
-     app.client.request(undefined, 'api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
+     app.client.request('/api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
        if(statusCode == 200) app.displayLoggedInUser(responsePayload);
-       else app.displayLoggedInUser(responsePayload);
+       else app.displayLoggedInUser(false);
      });
    }
  };
@@ -421,13 +395,15 @@ app.getCartData = () => {
  * @param {user} object - user's data
  */
 app.displayLoggedInUser = (user) => {
-  const { firstName, lastName } = user;
-  document.getElementById('user').innerHTML = `<b>Logged in as</b> ${firstName}&nbsp;${lastName}`;
+  if(typeof user == 'object' && user.hasOwnProperty('firstName') && user.hasOwnProperty('lastName')) {
+    const { firstName, lastName } = user;
+    document.getElementById('user').innerHTML = `<b>Logged in as</b> ${firstName}&nbsp;${lastName}`;
+  }
 };
 
 /**
  * Add items to cart or remove items.
- * @param {item} object - cart item object. @TODO: test.
+ * @param {item} object - cart item object.
  */
 app.addToCart = (item) => {
   if(app.config.sessionToken) {
@@ -447,21 +423,19 @@ app.addToCart = (item) => {
     items.push(item);
     payload['items'] = items;
 
-    app.client.request(undefined, 'api/carts', method, undefined,  payload, (statusCode, responsePayload) => {
+    app.client.request('/api/carts', method, undefined,  payload, (statusCode, responsePayload) => {
         if(statusCode == 200) {
-
             const queryStringObject = { 'email': app.config.sessionToken.email };
 
-            app.client.request(undefined, 'api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
+            app.client.request('/api/users', 'GET', queryStringObject, undefined, (statusCode, responsePayload) => {
               if(statusCode == 200) {
                   const { cartId } = responsePayload;
 
                   const newQueryStringObject = { 'id': cartId };
 
-                  app.client.request(undefined, 'api/carts', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
-                      if(statusCode == 200) {
-                        app.setSessionCart(responsePayload);
-                      } else app.setSessionCart(false);
+                  app.client.request('/api/carts', 'GET', newQueryStringObject, undefined, (statusCode, responsePayload) => {
+                      if(statusCode == 200) app.setSessionCart(responsePayload);
+                      else app.setSessionCart(false);
                   });
               } else app.logUserOut();
             });
@@ -503,14 +477,14 @@ app.addToCart = (item) => {
         const elErrorDiv = document.getElementById('noCart');
         const elPara = elErrorDiv.querySelector('.alert');
 
-        app.client.request(undefined, 'api/carts', 'PUT', undefined, payload, (statusCode, responsePayload) => {
+        app.client.request('/api/carts', 'PUT', undefined, payload, (statusCode, responsePayload) => {
           if(statusCode == 200) {
 
             const queryStringObject = {
               id
             };
 
-            app.client.request(undefined, 'api/carts', 'GET', queryStringObject, undefined, (statuCode, responsePayload) => {
+            app.client.request('/api/carts', 'GET', queryStringObject, undefined, (statuCode, responsePayload) => {
               if(statusCode == 200) {
                 if(elErrorDiv.getAttribute('class') !== 'hide') {
                   elErrorDiv.classList.add('hide');
@@ -671,7 +645,7 @@ app.bindAllForms = () => {
           // If the method is DELETE, the payload should be a queryStringObject instead
           const queryStringObject = (method == 'DELETE') ? payload : {};
 
-            app.client.request(undefined, path, method, queryStringObject, payload, (statusCode, responsePayload) => {
+            app.client.request(path, method, queryStringObject, payload, (statusCode, responsePayload) => {
               if(statusCode == 200) {
                   app.formResponseProcessor(formId, payload, responsePayload);
               } else if(statusCode == 403) {
@@ -752,7 +726,7 @@ app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
           password
         };
 
-        app.client.request(undefined, 'api/tokens', 'POST', undefined, newPayload, (statusCode,responsePayload) => {
+        app.client.request('/api/tokens', 'POST', undefined, newPayload, (statusCode, responsePayload) => {
            // Display an error on the form if needed.
            if(statusCode !== 200) {
               // Set the formError field with the error text.
@@ -790,15 +764,23 @@ app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
       if(!elResponseDiv.hasChildNodes()) {
           elResponseDiv.appendChild(elPara);
       }
-      setTimeout(()=> window.location = '/account/login', 10000);
+
+      setTimeout(()=> {
+        app.setSessionToken(false);
+        app.setLoggedInClass(false);
+        app.setSessionCart(false);
+        window.location = 'account/login';
+      }, 10000);
     break;
     case 'frmAccDelete':
-      window.location = '/account/deleted';
       app.setLoggedInClass(false);
+      app.setSessionToken(false);
+      app.setSessionCart(false);
+      window.location = '/account/deleted';
     break;
     case 'frmOrder':
-      window.location = '/order/confirm';
       app.setSessionCart(false);
+      window.location = '/order/confirm';
     break;
   }
 }
@@ -818,6 +800,10 @@ app.formErrorResponse = (statusCode, responsePayload) => {
     elErrorPara.innerText = Error;
     const styles = ['alert', 'alert-danger'];
     elErrorPara.classList.add(...styles);
+
+    if(elErrorDiv.hasChildNodes()) {
+      elErrorDiv.removeChild(elErrorDiv.firstChild);
+    }
 
     if(!elErrorDiv.hasChildNodes()) {
       elErrorDiv.appendChild(elErrorPara);
@@ -853,14 +839,13 @@ app.logUserOut = () => {
       id
     };
 
-    app.client.request(undefined, 'api/tokens', 'DELETE', queryStringObject, undefined, (statusCode, responsePayload) => {
+    app.client.request('/api/tokens', 'DELETE', queryStringObject, undefined, (statusCode, responsePayload) => {
       if(statusCode == 200) {
         app.setSessionCart(false);
         app.setSessionToken(false);
         app.setLoggedInClass(false);
 
         window.location = '/';
-        // @TODO display logged out message. (on top) logged in message.
       }
     });
   }
@@ -913,8 +898,8 @@ app.setLoggedInClass = (isLoggedIn) => {
  * @param {token} object - session token object (email, tokenId)
  */
 app.setSessionToken = (token) => {
-  app.config.sessionToken = token;
 
+  app.config.sessionToken = token;
   const tokenString = JSON.stringify(token);
   localStorage.setItem('token', tokenString);
 
@@ -937,16 +922,16 @@ app.renewToken = (callback) => {
       'extend': true
     };
 
-    app.client.request(undefined, 'api/tokens', 'PUT', undefined, payload, (statusCode, responsePayload) => {
+    app.client.request('/api/tokens', 'PUT', undefined, payload, (statusCode, responsePayload) => {
       if(statusCode == 200) {
         // Retrieve new token details.
         const queryStringObject = {
           id
         };
 
-        app.client.request(undefined, 'api/tokens', 'GET', queryStringObject ,undefined, (newStatusCode, newResponsePayload) => {
+        app.client.request('/api/tokens', 'GET', queryStringObject ,undefined, (statusCode, responsePayload) => {
           if(statusCode == 200) {
-            app.setSessionToken(newResponsePayload);
+            app.setSessionToken(responsePayload);
             callback(false);
           } else {
             app.setSessionToken(false);
@@ -992,9 +977,6 @@ app.init = () => {
    // Renew token.
   app.tokenRenewalLoop();
 
-  // Load data on page.
-  app.loadDataOnPage();
-
   // Remove items.
   app.bindRemoveItemsEvent();
 
@@ -1003,6 +985,9 @@ app.init = () => {
 
   // load user data to display.
   app.loadUser();
+
+  // Load data on page.
+  app.loadDataOnPage();
 };
 
 /** Call the init processes after the window loads. */

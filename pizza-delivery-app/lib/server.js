@@ -65,7 +65,8 @@ server.unifiedServer = (req, res) => {
         // Determine the type of response (fallback to JSON).
         contentType = typeof(contentType) == 'string' ? contentType : 'json';
 
-        let header, payloadString = '';
+        let header = '';
+        let payloadString = '';
 
         // Return the response parts that are content-type specific.
         switch(contentType) {
@@ -96,7 +97,7 @@ server.unifiedServer = (req, res) => {
           case 'json':
             header = 'application/json';
             payloadString = typeof(payload) == 'object'? payload : {};
-            payloadString = JSON.stringify(payload);
+            payloadString = JSON.stringify(payloadString);
             break;
         }
 

@@ -19,7 +19,7 @@ environments.staging = {
   'stripe':{
    'baseUrl':'api.stripe.com',
    'publicKey': 'YOUR API KEY HERE',
-   'secret': 'YOUR API KEY HERE'
+   'secret': 'YOUR SECRET KEY HERE'
   },
   'mailgun': {
    'baseUrl':'api.mailgun.net',
@@ -31,7 +31,7 @@ environments.staging = {
    'appName': 'CheesyDelights',
    'companyName': 'Cheesy Delights, Inc.',
    'yearCreated': '2019',
-   'baseUrl': 'http://localhost:3000/'
+   'baseUrl': 'https://localhost:3001/'
  }
 };
 
@@ -56,7 +56,7 @@ environments.production = {
     'appName': 'CheesyDelights',
     'companyName': 'Cheesy Delights, Inc.',
     'YearCreated': '2019',
-    'baseUrl': 'http://localhost:3000/'
+    'baseUrl': 'https://localhost:5001/'
   }
 };
 
