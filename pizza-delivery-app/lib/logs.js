@@ -105,7 +105,7 @@ lib.list = (includeCompressedLogs, callback) => {
 lib.decompress = (fileId, callback) => {
   const fileName = `${fileId}.gz.b64`;
 
-  fs.readFile(`${ib.baseDir}${fileName}`, 'utf8', (err, str) => {
+  fs.readFile(`${lib.baseDir}${fileName}`, 'utf8', (err, str) => {
     if(!err && str) {
       // Inflate the data.
       const inputBuffer = Buffer.from(str, 'base64');

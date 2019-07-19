@@ -22,11 +22,8 @@ This is an open-ended assignment. You may take any direction you'd like to go wi
 
 And please: Don't forget to document how a client should interact with the API you create!
 
-
 *Video Component:* https://youtu.be/QsvuutPuI0o
 
-
----
 
 ## Homework Assignment 3
 
@@ -46,3 +43,22 @@ This is an open-ended assignment. You can take any direction you'd like to go wi
 
 
 *Video Component:* https://youtu.be/2aQx0K6OW2A
+
+
+## Homework Assignment 4
+
+Details:
+
+It is time to build the Admin CLI for the pizza-delivery app you built in the previous assignments. Please build a CLI interface that would allow the manager of the pizza place to:
+
+1. View all the current menu items
+
+2. View all the recent orders in the system (orders placed in the last 24 hours)
+
+3. Lookup the details of a specific order by order ID
+
+4. View all the users who have signed up in the last 24 hours
+
+5. Lookup the details of a specific user by email address
+
+*Video Component:* https://youtu.be/30M57ai5quw
