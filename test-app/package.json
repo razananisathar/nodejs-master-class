@@ -1,0 +1,14 @@
+{
+  "name": "test-app",
+  "version": "1.0.0",
+  "description": "Unit test using Node.js assert lib",
+  "main": "app/lib.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "author": "razananisathar",
+  "license": "ISC"
+}
